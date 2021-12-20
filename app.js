@@ -11,7 +11,7 @@ const { PORT = 3000, BASE_PATH } = process.env; // или 2 вариант: cons
 // создание приложения методом express
 const app = express();
 
-app.use(router);
+
 
 app.use((req, res, next) => {
   req.user = {
@@ -21,8 +21,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(router);
+
 // подключаемся к серверу mongo
-mongoose.connect("mongodb://localhost:27017/mestodb", {});
+mongoose.connect("mongodb://localhost:27017/mestodb");
 
 // Прослушиваем подключение на порту 3000
 app.listen(PORT, () => {

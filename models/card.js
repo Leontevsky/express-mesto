@@ -1,5 +1,6 @@
 // директория models/card.js содержит файлы описания схемы карточки
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const cardSchema = new mongoose.Schema({
   // name — имя карточки, строка от 2 до 30 символов, обязательное поле;

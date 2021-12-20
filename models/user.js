@@ -2,8 +2,12 @@
 
 // директория models/user.js содержит файлы описания схемы пользователя
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const userSchema = new mongoose.Schema({
+  id: {
+    type: String,
+  },
   // name — имя пользователя, строка от 2 до 30 символов, обязательное поле;
   name: {
     type: String,

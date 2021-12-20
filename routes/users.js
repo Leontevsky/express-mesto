@@ -6,13 +6,13 @@ const router = require("express").Router();
 const {
   getUsers,
   getCurrentUser,
-  createCard,
+  createUser,
 } = require("../controllers/users");
 
 router.get("/users", getUsers);
 router.get("/users/:id", getCurrentUser);
 
-router.post("/users", createCard);
+router.post("/users", createUser);
 
 // (req, res) => {
 //   res.status(200).send({ message: "Привет /post!" });
