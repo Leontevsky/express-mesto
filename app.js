@@ -6,12 +6,11 @@ const express = require("express");
 const router = require("./routes/users");
 // подключение mongoose
 const mongoose = require("mongoose");
+const bodyParser = require('body-parser');
 //  Настройка порта, который слушает приложение. По умолчанию 3000. Взяли из переменной окружения
 const { PORT = 3000, BASE_PATH } = process.env; // или 2 вариант: const PORT = process.env.PORT || 3000
 // создание приложения методом express
 const app = express();
-
-
 
 app.use((req, res, next) => {
   req.user = {
@@ -21,6 +20,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(bodyParser.json()); // для собирания JSON-формата
+app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 app.use(router);
 
 // подключаемся к серверу mongo

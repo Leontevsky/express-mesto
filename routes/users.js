@@ -11,7 +11,6 @@ const {
 
 router.get("/users", getUsers);
 router.get("/users/:id", getCurrentUser);
-
 router.post("/users", createUser);
 
 // (req, res) => {
@@ -19,3 +18,5 @@ router.post("/users", createUser);
 // }
 
 module.exports = router;
+
+

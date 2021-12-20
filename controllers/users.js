@@ -6,12 +6,6 @@ const getUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: `Ошибка ${err.message}` }));
 };
 
-// const getCurrentUser = (req, res) => {
-//   User.findById(req.params.id)
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => res.status(500).send({ message: `Ошибка ${err.message}` }));
-// };
-
 const getCurrentUser = (req, res) => {
   return User.findOne({ id: req.params.id }) // найти вообще всех
     .then((user) => {
@@ -23,20 +17,16 @@ const getCurrentUser = (req, res) => {
     .catch((err) => res.status(500).send({ message: `Ошибка ${err.message}` }));
 };
 
-// const getCurrentUser = (req, res) => {
-//   res.status(200).send({ message: "Привет!", userId: req.params.userId });
-// };
-
 const createUser = (req, res) => {
-  console.log(req.user._id); // _id станет доступен
+  // console.log(req.user._id); // _id станет доступен
   const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar  })
+
+  User.create({ name, about, avatar })
     // вернём записанные в базу данные
-    .then(user => res.send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     // данные не записались, вернём ошибку
-    .catch(err => res.status(500).send({ message: `Ошибка ${err.message}` }));
+    .catch((err) => res.status(500).send({ message: `Ошибка ${err.message}` }));
 }
 
-
-
 module.exports = { getUsers, getCurrentUser, createUser };
+
