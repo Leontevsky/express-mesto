@@ -17,7 +17,7 @@ const cardSchema = new mongoose.Schema({
   },
   // owner — ссылка на модель автора карточки, тип ObjectId, обязательное поле;
   owner: {
-    type: Objectid,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   // likes — список лайк-их пост пользователей, массив ObjectId, по умолчанию — пустой массив (поле default);

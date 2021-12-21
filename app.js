@@ -3,7 +3,8 @@
 // подключение express
 const express = require("express");
 // подключение router
-const router = require("./routes/users");
+const userRouter = require("./routes/users");
+const cardRouter = require("./routes/cards");
 // подключение mongoose
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
@@ -22,7 +23,8 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
-app.use(router);
+app.use("/", userRouter);
+app.use("/", cardRouter);
 
 // подключаемся к серверу mongo
 mongoose.connect("mongodb://localhost:27017/mestodb");

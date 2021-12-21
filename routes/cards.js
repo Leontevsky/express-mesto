@@ -6,7 +6,7 @@ const {
   deleteCard,
   likeCard,
   dislikeCard,
-} = require("../controllers/users");
+} = require("../controllers/cards");
 
 router.get("/cards", getCards); // возвращает все карточки
 router.post("/cards", createCard); // создаёт карточку
