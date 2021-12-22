@@ -16,7 +16,7 @@ const getUser = (req, res) => {
       res.status(200).send({data: user});
     })
     .catch((err) => {
-      if (err.name === "Error") {
+      if (err.name === "CastError") {
         res.status(400).send({ message: "Переданы некорректные данные при создании пользователя" })
       } else {
         res.status(500).send({ message: err.message });
@@ -32,7 +32,7 @@ const createUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     // данные не записались, вернём ошибку
     .catch((err) => {
-      if (err.name === "Error") {
+      if (err.name === "ValidationError") {
         res.status(400).send({ message: "Переданы некорректные данные при создании пользователя" })
       } else { res.status(500).send({ message: error.message })}
     });
@@ -40,10 +40,10 @@ const createUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, {name, about})
+  User.findByIdAndUpdate(req.user._id, {name, about}, { new: true, runValidators: true })
   .then((user) => res.send({ data: user }))
   .catch((err) => {
-    if (err.name === "Error") {
+    if (err.name === "ValidationError") {
       res.status(400).send({ message: "Переданы некорректные данные в методы обновления профиля" })
     } else {
       res.status(500).send({ message: `Ошибка ${err.message}` })
@@ -53,7 +53,7 @@ const updateUser = (req, res) => {
 
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, {avatar})
+  User.findByIdAndUpdate(req.user._id, {avatar}, { new: true, runValidators: true })
   .then((user) => res.send({ data: user }))
   .catch((err) => {
     if (err.name === "ValidationError") {

@@ -39,7 +39,7 @@ const deleteCard = (req, res) => {
       return res.status(200).send("Удалили карточку");
     })
     .catch((err) => {
-      if (err.name === "Error") {
+      if (err.name === "CastError") {
         res.status(400).send({
           message: "Переданы некорректные данные в методы удалении карточки",
         });
@@ -65,7 +65,7 @@ const likeCard = (req, res) => {
     return res.status(200).send("Лайк поставлен");
   })
   .catch((err) => {
-    if (err.name === "Error") {
+    if (err.name === "CastError") {
       res.status(400).send({
         message: "Переданы некорректные данные для лайка",
       });
