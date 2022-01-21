@@ -2,19 +2,13 @@
 
 // подключение express
 const express = require("express");
+// подключение mongoose
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const { errors } = require("celebrate");
 // подключение router
 const userRouter = require("./routes/users");
 const cardRouter = require("./routes/cards");
-// подключение mongoose
-const mongoose = require("mongoose");
-const bodyParser = require('body-parser');
-//  Настройка порта, который слушает приложение. По умолчанию 3000. Взяли из переменной окружения
-const { PORT = 3000, BASE_PATH } = process.env; // или 2 вариант: const PORT = process.env.PORT || 3000
-// создание приложения методом express
-const app = express();
-
-const cookieParser = require("cookie-parser");
-const { errors } = require("celebrate");
 const { createUser, login } = require("./controllers/users");
 const auth = require("./middlewares/auth");
 const {
@@ -23,25 +17,34 @@ const {
 } = require("./middlewares/validation");
 const { NotFound } = require("./errors/NotFound");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: "61c06d385a6b4f0a0b34bc39", // вставьте сюда _id созданного в предыдущем пункте пользователя
-//   };
-
-//   next();
-// });
-
-app.use(bodyParser.json()); // для собирания JSON-формата
-app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
-app.use("/", validationLogin, userRouter);
-app.use("/", validationCreateUser, cardRouter);
-
-app.post('/signin', login);
-app.post('/signup', createUser);
-
+//  Настройка порта, который слушает приложение. По умолчанию 3000. Взяли из переменной окружения
+const { PORT = 3000, BASE_PATH } = process.env; // или 2 вариант: const PORT = process.env.PORT || 3000
+// создание приложения методом express
+const app = express();
 // подключаемся к серверу mongo
 mongoose.connect("mongodb://localhost:27017/mestodb");
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(requestLogger);
+
+app.post('/signin', validationLogin, login);
+app.post('/signup', validationCreateUser, createUser);
+
+app.use("/", auth, userRouter);
+app.use("/", auth, cardRouter);
+app.use(() => {
+  throw new NotFound("Роутер не найден");
+});
+app.use(errorLogger);
+app.use(errors());
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500 ? "На сервере произошла ошибка" : message,
+  });
+  next();
+});
 
 // Прослушиваем подключение на порту 3000
 app.listen(PORT, () => {

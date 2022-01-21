@@ -6,17 +6,21 @@ const router = require("express").Router();
 const {
   getUsers,
   getUser,
-  // createUser,
-  updateUser,
+  updateProfile,
   updateAvatar,
   getCurrentUser,
 } = require("../controllers/users");
+const {
+  validationUpdateAvatar,
+  validationUpdateProfile,
+  validationUserId,
+} = require("../middlewares/validation");
 
 router.get("/users", getUsers);
-router.get("/users/:id", getUser);
 router.get("/users/me", getCurrentUser);
-router.patch("/users/me", updateUser); //обновляет профиль
-router.patch("/users/me/avatar", updateAvatar); //обновляет аватар
+router.get("/users/:id", validationUserId, getUser);
+router.patch("/users/me", validationUpdateProfile, updateProfile);
+router.patch("/users/me/avatar", validationUpdateAvatar, updateAvatar);
 
 // (req, res) => {
 //   res.status(200).send({ message: "Привет /post!" });

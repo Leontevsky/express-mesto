@@ -1,6 +1,7 @@
 // директория models/card.js содержит файлы описания схемы карточки
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const validator = require("validator");
 
 const cardSchema = new mongoose.Schema({
   // name — имя карточки, строка от 2 до 30 символов, обязательное поле;
@@ -14,11 +15,16 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (value) => validator.isURL(value),
+      message: "Невалидный link",
+    },
   },
   // owner — ссылка на модель автора карточки, тип ObjectId, обязательное поле;
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: "user",
   },
   // likes — список лайк-их пост пользователей, массив ObjectId, по умолчанию — пустой массив (поле default);
   likes: {
