@@ -24,13 +24,13 @@ const {
 const { NotFound } = require("./errors/NotFound");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "61c06d385a6b4f0a0b34bc39", // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: "61c06d385a6b4f0a0b34bc39", // вставьте сюда _id созданного в предыдущем пункте пользователя
+//   };
 
-  next();
-});
+//   next();
+// });
 
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
