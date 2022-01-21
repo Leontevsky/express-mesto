@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 30,
     required: true, //оно должно быть у каждого пользователя, так что имя — обязательное поле
+    default: "Жак-Ив Кусто",
   },
   // about — информация о пользователе, строка от 2 до 30 символов, обязательное поле;
   about: {
@@ -16,11 +17,23 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 30,
     required: true,
+    default: "Исследователь",
   },
   // avatar — ссылка на аватарку, строка, обязательное поле.
   avatar: {
     type: String,
     required: true,
+    default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8
   },
 });
 

@@ -25,18 +25,18 @@ const getUser = (req, res) => {
 };
 
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    // вернём записанные в базу данные
-    .then((user) => res.status(200).send({ data: user }))
-    // данные не записались, вернём ошибку
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Переданы некорректные данные при создании пользователя" })
-      } else { res.status(500).send({ message: error.message })}
-    });
-}
+// const createUser = (req, res) => {
+//   const { name, about, avatar, email, password } = req.body;
+//   User.create({ name, about, avatar, email, password })
+//     // вернём записанные в базу данные
+//     .then((user) => res.status(200).send({ data: user }))
+//     // данные не записались, вернём ошибку
+//     .catch((err) => {
+//       if (err.name === "ValidationError") {
+//         res.status(400).send({ message: "Переданы некорректные данные при создании пользователя" })
+//       } else { res.status(500).send({ message: error.message })}
+//     });
+// }
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
@@ -66,5 +66,65 @@ const updateAvatar = (req, res) => {
   });
 }
 
-module.exports = { getUsers, getUser, createUser, updateUser, updateAvatar };
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email })
+    .select("+password")
+    .then((user) => {
+      if (!user) {
+        throw new NotFound("Нет пользователя с таким id");
+      } else {
+        bcrypt.compare(password, user.password, (error, isValid) => {
+          if (error) {
+            throw new BadRequest("Неверный запрос");
+          }
+          if (!isValid) {
+            throw new BadAuth("Неправильный пароль");
+          }
+          if (isValid) {
+            const token = jwt.sign(
+              {
+                _id: user._id,
+              },
+              "secret-key",
+            );
+            res
+              .cookie("jwt", token, {
+                maxAge: 3600000 * 24 * 7,
+                httpOnly: true,
+                sameSite: true,
+              })
+              .send({ message: "Неверный логин либо пароль" });
+          }
+        });
+      }
+    })
+    .catch(() => {
+      throw new BadAuth("Ошибка авторизации");
+    })
+    .catch(next);
+};
+
+const getCurrentUser = (req, res, next) => {
+  const userId = req.user._id;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        throw new NotFound("Нет пользователя с таким id");
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        throw new BadRequest(
+          "Переданы некорректные данные в методы получения пользователя",
+        );
+      } else {
+        next(err);
+      }
+    })
+    .catch(next);
+};
+
+module.exports = { getUsers, getUser, updateUser, updateAvatar, getCurrentUser };
 

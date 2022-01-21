@@ -1,6 +1,7 @@
 const Card = require("../models/card");
 
 const getCards = (req, res) => {
+  console.log(cards)
   Card.find({})
     .then((cards) => res.status(200).send({ data: cards })) //?
     .catch((err) => res.status(500).send({ message: `Ошибка ${err.message}` }));

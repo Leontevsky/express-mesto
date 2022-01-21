@@ -13,6 +13,17 @@ const { PORT = 3000, BASE_PATH } = process.env; // или 2 вариант: cons
 // создание приложения методом express
 const app = express();
 
+const cookieParser = require("cookie-parser");
+const { errors } = require("celebrate");
+const { createUser, login } = require("./controllers/users");
+const auth = require("./middlewares/auth");
+const {
+  validationLogin,
+  validationCreateUser,
+} = require("./middlewares/validation");
+const { NotFound } = require("./errors/NotFound");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+
 app.use((req, res, next) => {
   req.user = {
     _id: "61c06d385a6b4f0a0b34bc39", // вставьте сюда _id созданного в предыдущем пункте пользователя
@@ -23,8 +34,11 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
-app.use("/", userRouter);
-app.use("/", cardRouter);
+app.use("/", validationLogin, userRouter);
+app.use("/", validationCreateUser, cardRouter);
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 // подключаемся к серверу mongo
 mongoose.connect("mongodb://localhost:27017/mestodb");
