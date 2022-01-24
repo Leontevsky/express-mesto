@@ -1,30 +1,30 @@
-const Card = require("../models/card");
-const BadRequest = require("../errors/BadRequest");
-const NotFound = require("../errors/NotFound");
-const Forbidden = require("../errors/Forbidden");
+const Card = require('../models/card');
+const BadRequest = require('../errors/BadRequest');
+const NotFound = require('../errors/NotFound');
+const Forbidden = require('../errors/Forbidden');
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.status(200).send({ data: cards })) //?
+    .then((cards) => res.status(200).send({ data: cards }))
     .catch((err) => next(err));
 };
 
 const createCard = (req, res, next) => {
-  console.log(req.user._id); // _id станет доступен
+  // console.log(req.user._id); // _id станет доступен
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-  .then((card) => res.status(200).send({ data: card }))
-  .catch((err) => {
-    if (err.name === "ValidationError") {
-      throw new BadRequest(
-        "Переданы некорректные данные в методы создания карточки",
-      );
-    } else {
-      next(err);
-    }
-  })
-  .catch(next);
+    .then((card) => res.status(200).send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequest(
+          'Переданы некорректные данные в методы создания карточки',
+        );
+      } else {
+        next(err);
+      }
+    })
+    .catch(next);
 };
 
 const deleteCard = (req, res, next) => {
@@ -33,22 +33,22 @@ const deleteCard = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFound("Карточка не найдена");
+        throw new NotFound('Карточка не найдена');
       }
       if (userId !== String(card.owner)) {
-        throw new Forbidden("Недостаточно прав");
+        throw new Forbidden('Недостаточно прав');
       }
       Card.findOneAndRemove(cardId)
         .then((currentCard) => {
           if (!currentCard) {
-            throw new NotFound("Карточка не найдена");
+            throw new NotFound('Карточка не найдена');
           }
-          return res.status(200).send({ message: "Карточка удалена" });
+          return res.status(200).send({ message: 'Карточка удалена' });
         })
         .catch((err) => {
-          if (err.name === "CastError") {
+          if (err.name === 'CastError') {
             throw new BadRequest(
-              "Переданы некорректные данные в методы удалении карточки",
+              'Переданы некорректные данные в методы удалении карточки',
             );
           } else {
             next(err);
@@ -59,7 +59,6 @@ const deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-
 const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -68,13 +67,13 @@ const likeCard = (req, res, next) => {
   )
     .then((data) => {
       if (!data) {
-        throw new NotFound("Нет данных");
+        throw new NotFound('Нет данных');
       }
-      return res.status(200).send({ massege: "Лайк поставлен" });
+      return res.status(200).send({ massege: 'Лайк поставлен' });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        throw new BadRequest("Переданы некорректные данные для лайка");
+      if (err.name === 'CastError') {
+        throw new BadRequest('Переданы некорректные данные для лайка');
       } else {
         next(err);
       }
@@ -90,13 +89,13 @@ const dislikeCard = (req, res, next) => {
   )
     .then((data) => {
       if (!data) {
-        throw new NotFound("Нет данных");
+        throw new NotFound('Нет данных');
       }
-      return res.status(200).send({ message: "Лайк убран" });
+      return res.status(200).send({ message: 'Лайк убран' });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
-        throw new BadRequest("Переданы некорректные данные для удаления лайка");
+      if (err.name === 'CastError') {
+        throw new BadRequest('Переданы некорректные данные для удаления лайка');
       } else {
         next(err);
       }
@@ -104,4 +103,12 @@ const dislikeCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { getCards, createCard, deleteCard, likeCard, dislikeCard };
+module.exports = {
+
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
+
+};

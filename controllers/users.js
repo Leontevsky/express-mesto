@@ -1,15 +1,15 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const User = require("../models/user");
-const BadRequest = require("../errors/BadRequest");
-const BadAuth = require("../errors/BadAuth");
-const NotFound = require("../errors/NotFound");
-const BadUnique = require("../errors/BadUnique");
+const User = require('../models/user');
+const BadRequest = require('../errors/BadRequest');
+const BadAuth = require('../errors/BadAuth');
+const NotFound = require('../errors/NotFound');
+const BadUnique = require('../errors/BadUnique');
 
 const getUsers = (req, res, next) => {
   User.find({}) // найти вообще всех пользователей и возвращаем их
-    .then((users) => res.status(200).send({ data: users })) //?
+    .then((users) => res.status(200).send({ data: users }))
     .catch((err) => next(err));
 };
 
@@ -17,14 +17,14 @@ const getUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        throw new NotFound("Нет пользователя с таким id");
+        throw new NotFound('Нет пользователя с таким id');
       }
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         throw new BadRequest(
-          "Переданы некорректные данные в методы получения пользователя",
+          'Переданы некорректные данные в методы получения пользователя',
         );
       } else {
         next(err);
@@ -40,13 +40,13 @@ const createUser = (req, res, next) => {
 
   if (!email || !password) {
     res.status(400).send({
-      message: "Email или пароль могут быть пустыми",
+      message: 'Email или пароль могут быть пустыми',
     });
   }
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new BadUnique("Пользователь существует");
+        throw new BadUnique('Пользователь существует');
       } else {
         bcrypt.hash(password, 10).then((hash) => {
           User.create({
@@ -57,23 +57,23 @@ const createUser = (req, res, next) => {
             password: hash,
           })
             .catch((err) => {
-              if (err.name === "MongoError" && err.code === 11000) {
+              if (err.name === 'MongoError' && err.code === 11000) {
                 throw new BadUnique(
-                  "Пользователь с таким email уже существует",
+                  'Пользователь с таким email уже существует',
                 );
               }
             })
             .then((currentUser) => res.status(200).send({ currentUser: currentUser.toJSON() }))
             .catch((err) => {
-              if (err.name === "ValidationError") {
+              if (err.name === 'ValidationError') {
                 throw new BadRequest(
-                  "Переданы некорректные данные в методы создания пользователя",
+                  'Переданы некорректные данные в методы создания пользователя',
                 );
               } else {
                 next(err);
               }
             });
-        });
+        }).catch(next);
       }
     })
     .catch(next);
@@ -89,9 +89,9 @@ const updateProfile = (req, res, next) => {
   )
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         throw new BadRequest(
-          "Переданы некорректные данные в методы обновления профиля",
+          'Переданы некорректные данные в методы обновления профиля',
         );
       } else {
         next(err);
@@ -109,9 +109,9 @@ const updateAvatar = (req, res, next) => {
   )
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         throw new BadRequest(
-          "Переданы некорректные данные в методы обновления аватара",
+          'Переданы некорректные данные в методы обновления аватара',
         );
       } else {
         next(err);
@@ -123,38 +123,38 @@ const updateAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
-    .select("+password")
+    .select('+password')
     .then((user) => {
       if (!user) {
-        throw new NotFound("Нет пользователя с таким id");
+        throw new BadAuth('Нет пользователя с таким id');
       } else {
         bcrypt.compare(password, user.password, (error, isValid) => {
           if (error) {
-            throw new BadRequest("Неверный запрос");
+            throw new BadAuth('Неверный запрос');
           }
           if (!isValid) {
-            throw new BadAuth("Неправильный пароль");
+            throw new BadAuth('Неправильный пароль');
           }
           if (isValid) {
             const token = jwt.sign(
               {
                 _id: user._id,
               },
-              "secret-key",
+              'secret-key',
             );
             res
-              .cookie("jwt", token, {
+              .cookie('jwt', token, {
                 maxAge: 3600000 * 24 * 7,
                 httpOnly: true,
                 sameSite: true,
               })
-              .send({ message: "Неверный логин либо пароль" });
+              .send({ message: 'Успешный вход' });
           }
         });
       }
     })
     .catch(() => {
-      throw new BadAuth("Ошибка авторизации");
+      throw new BadAuth('Ошибка авторизации');
     })
     .catch(next);
 };
@@ -164,14 +164,14 @@ const getCurrentUser = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        throw new NotFound("Нет пользователя с таким id");
+        throw new NotFound('Нет пользователя с таким id');
       }
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         throw new BadRequest(
-          "Переданы некорректные данные в методы получения пользователя",
+          'Переданы некорректные данные в методы получения пользователя',
         );
       } else {
         next(err);
@@ -189,4 +189,3 @@ module.exports = {
   login,
   getCurrentUser,
 };
-
