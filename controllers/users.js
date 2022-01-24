@@ -39,9 +39,7 @@ const createUser = (req, res, next) => {
   } = req.body;
 
   if (!email || !password) {
-    res.status(400).send({
-      message: 'Email или пароль могут быть пустыми',
-    });
+    throw new BadRequest('Email или пароль могут быть пустыми');
   }
   User.findOne({ email })
     .then((user) => {

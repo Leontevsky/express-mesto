@@ -19,7 +19,7 @@ const {
 const NotFound = require('./errors/NotFound');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 //  Настройка порта, который слушает приложение. По умолчанию 3000. Взяли из переменной окружения
-const { PORT = 3000} = process.env;
+const { PORT = 3000 } = process.env;
 // или 2 вариант: const PORT = process.env.PORT || 3000
 // создание приложения методом express
 const app = express();
